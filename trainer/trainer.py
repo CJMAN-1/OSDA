@@ -18,19 +18,20 @@ class Trainer:
         data = dict()
         try:
             data['img'], data['label'] = loader_s.next()
-            batch['S'] = data
+            batch['S'] = data.copy()
         except StopIteration:
             loader_s = iter(self.loader_s_train)
             data['img'], data['label'] = loader_s.next()
-            batch['S'] = data
+            batch['S'] = data.copy()
         
+        data = dict()
         try:
             data['img'], data['label'] = loader_t.next()
-            batch['T'] = data
+            batch['T'] = data.copy()
         except StopIteration:
             loader_t = iter(self.loader_t_train)
             data['img'], data['label'] = loader_t.next()
-            batch['T'] = data
+            batch['T'] = data.copy()
 
         batch['S']['img'] = batch['S']['img'].cuda()
         batch['S']['label'] = batch['S']['label'].cuda()
@@ -43,7 +44,9 @@ class Trainer:
 
         for iteration in range(1):#range(self.opt.total_iter):
             batch = self.get_batch(loader_s, loader_t)
-
+            print(self.loader_s_train.__len__())
+            print(self.loader_t_train.__len__())
+            print(self.loader_t_test.__len__())
             print(batch['S']['img'].size())
             print(batch['S']['label'].size())
             print(batch['T']['img'].size())
@@ -52,11 +55,20 @@ class Trainer:
             print(torch.max(batch['S']['label']))
             print(torch.min(batch['S']['img']))
             print(torch.min(batch['S']['label']))
+            print('here-----------')
+            print(torch.max(batch['T']['label']))
+            print(torch.min(batch['T']['label']))
             lbl = loader_s._dataset.colorize_label(batch['S']['label'])            
 
             img_grid = torchvision.utils.make_grid(batch['S']['img'], normalize=True, value_range=(-1,1))
             self.writer.add_image('input/img', img_grid)
             img_grid = torchvision.utils.make_grid(lbl, normalize=True, value_range=(0,255))
             self.writer.add_image('input/label', img_grid)
+            img_grid = torchvision.utils.make_grid(batch['T']['img'], normalize=True, value_range=(-1,1))
+            self.writer.add_image('input/Timg', img_grid)
+            lbl = loader_t._dataset.colorize_label(batch['T']['label'])
+            img_grid = torchvision.utils.make_grid(lbl, normalize=True, value_range=(0,255))
+            self.writer.add_image('input/Tlabel', img_grid)
+            
 
-            sleep(0.5) # 아마 이미지가 log파일에 저장되는데 어느정도 시간이 필요한 것 같음.
+            sleep(1) # 아마 이미지가 log파일에 저장되는데 어느정도 시간이 필요한 것 같음.
