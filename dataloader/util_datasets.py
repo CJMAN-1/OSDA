@@ -5,18 +5,18 @@ from .idd_dataset import *
 
 def make_datasets(opt):
     # source 
-    if opt.source == 'gta5':
+    if opt.source == 'GTA5':
         dataset_s_train = GTA5_dataset(opt, opt.source_list_path, opt.split_source_train)
-    elif opt.source == 'cityscapes':
+    elif opt.source == 'Cityscapes':
         dataset_s_train = Cityscapes_dataset(opt, opt.source_list_path, opt.split_source_train)
     elif opt.source == 'IDD':
         dataset_s_train = IDD_dataset(opt, opt.source_list_path, opt.split_source_train)
 
     # target 
-    if opt.target == 'gta5':
+    if opt.target == 'GTA5':
         dataset_t_train = GTA5_dataset(opt, opt.target_list_path, opt.split_target_train)
         dataset_t_test = GTA5_dataset(opt, opt.target_list_path, opt.split_target_test)
-    elif opt.target == 'cityscapes':
+    elif opt.target == 'Cityscapes':
         dataset_t_train = Cityscapes_dataset(opt, opt.target_list_path, opt.split_target_train)
         dataset_t_test = Cityscapes_dataset(opt, opt.target_list_path, opt.split_target_test)
     elif opt.target == 'IDD':

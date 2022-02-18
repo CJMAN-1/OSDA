@@ -1,19 +1,19 @@
 from .custom_dataset import *
 from torchvision.transforms.functional import InterpolationMode
 
-class Cityscapes_dataset(Custom_dataset):
+class IDD_dataset(Custom_dataset):
     def __init__(self, opt, listfile_path, split):
         super().__init__(opt, listfile_path, split)
 
         # transform 
         self.img_transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Resize(size=self.opt.img_size, interpolation=InterpolationMode.BILINEAR),
+            #transforms.Resize(size=self.opt.img_size, interpolation=InterpolationMode.BILINEAR),
             transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
         ])
         self.label_transform = transforms.Compose([
             transforms.PILToTensor(),
-            transforms.Resize(size=self.opt.img_size, interpolation=InterpolationMode.NEAREST),
+            #transforms.Resize(size=self.opt.img_size, interpolation=InterpolationMode.NEAREST),
         ])
 
         # colors
@@ -37,27 +37,32 @@ class Cityscapes_dataset(Custom_dataset):
         [0, 80, 100],       # train
         [0, 0, 230],        # motorcycle
         [119, 11, 32],      # bicycle
-        [0, 0, 0]           # ignore
+        [255, 255, 255],     # unknown
+        [0, 0, 0],          # ignore
         ]
 
         # label configure
         ignore_label = -1
+        unknown_label = 19
         self.ignore_label = ignore_label
+        self.unknown_label = unknown_label
         self.id_to_trainid = {
-            #unlabeled          #egovehicle         #rectfication border#out of roi         #static
-            0:ignore_label,     1:ignore_label,     2:ignore_label,     3:ignore_label,     4:ignore_label,
-            #dynamic            #ground             #road               #sidewalk           #parking
-            5:ignore_label,     6:ignore_label,     7:0,                8:1,                9:ignore_label,
-            #rail track         #building           #wall               #fence              #guard rail
-            10:ignore_label,    11:2,               12:3,               13:4,               14:ignore_label,
-            #bridge             #tunnel             #pole               #polegroup          #traffic light
-            15:ignore_label,    16:ignore_label,    17:5,               18:ignore_label,    19:6,
-            #traffic sign       #vegetation         #terrain            #sky                #person
-            20:7,               21:8,               22:9,               23:10,              24:11,
-            #rider              #car                #truck              #bus                #caravan
-            25:12,              26:13,              27:14,              28:15,              29:ignore_label,
-            #trailer            #train              #motorcycle         #bicycle            #license plate
-            30:ignore_label,    31:16,              32:17,              33:18,              -1:ignore_label,
+            #road                   #parking            #drivable fallback      #sidewalk               #rail track
+            0:0,                    1:ignore_label,     2:unknown_label,        3:1,                    4:ignore_label,
+            #non-drivable fallback  #person             #animal                 #rider                  #motorcycle
+            5:9,                    6:11,               7:ignore_label,         8:12,                   9:17,
+            #bicycle                #autorickshaw       #car                    #truck                  #bus
+            10:18,                  11:unknown_label,   12:13,                  13:14,                  14:15,
+            #caravan                #trailer            #train                  #vehicle fallback       #curb
+            15:ignore_label,        16:ignore_label,    17:16,                  18:unknown_label,       19:unknown_label,
+            #wall                   #fence              #guard rail             #billboard              #traffic sign
+            20:3,                   21:4,               22:ignore_label,        23:unknown_label,       24:7,
+            #traffic light          #pole               #pole group             #obs-str-bar-fallback   #building
+            25:6,                   26:5,               27:ignore_label,        28:ignore_label,        29:2,
+            #bridge                 #tunnel             #vegetation             #sky                    #fallback background
+            30:ignore_label,        31:ignore_label,    32:8,                   33:10,                  34:-2,
+            #unlabeled              #ego vehicle        #rectification border   #out of roi             #license plate
+            35:ignore_label,        36:ignore_label,    37:ignore_label,        38:ignore_label,        39:ignore_label
         }
         self.validclass_name = [
             'road',             'sidewalk',         'building',         'wall',             'fence',

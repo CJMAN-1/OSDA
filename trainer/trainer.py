@@ -71,4 +71,4 @@ class Trainer:
             self.writer.add_image('input/Tlabel', img_grid)
             
 
-            sleep(1) # 아마 이미지가 log파일에 저장되는데 어느정도 시간이 필요한 것 같음.
+            sleep(0.5) # 아마 이미지가 log파일에 저장되는데 어느정도 시간이 필요한 것 같음.
