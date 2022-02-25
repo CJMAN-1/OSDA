@@ -1,0 +1,13 @@
+-1. deeplab 추가하기
+-2. tqdm write로 출력하기.
+-3. eval 코드 추가
+4. deeplab 잘돌아가는지 확인 (GTA -> cityscapese 성능확인) -> 안나오는데 왜지..? 우선 성능비교할 수 있는 cityscapes만 돌려봄 논문에서는 약 miou 70정도까지 나옴
+    -확인내용
+    a. 이미지 사이즈 : deeplab v2, proda는 1024X512 똑같이함. 나도 똑같이함.
+    b. pretraining : 이미지넷에 pretraining된 resnet사용. 난 안한거 같음. -> cityscapese 성능 60언저리로 안나오면 pretrained 모델 불러오는 코드 추가하기
+    c. learning rate : kazuto1011꺼보고 그거에 맞춰서해보자.
+    d. preprocessing : kazuto1011꺼보고 그거에 맞춰서해보자.
+    e. 데이터로더쪽이 잘못된거 같은 한바퀴 돌고나서부터는 같은 이미지만 들어오는 것 같다
+5. openset 상황으로 코드 동작 (OSBP 구현)
+6. tqdm 여러줄 띄울 수 있는지 찾아보기 -> 찾아보지 말기
+-7. log에 하이퍼파라미터 띄우기

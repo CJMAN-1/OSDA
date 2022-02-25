@@ -39,7 +39,7 @@ def make_dataloader(opt):
                                     drop_last = opt.drop_last)
 
     loader_t_test = DataLoader(dataset = dataset_t_test,
-                                    batch_size = opt.batch_size,
+                                    batch_size = 1,
                                     shuffle = False,
                                     drop_last = False)
 

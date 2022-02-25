@@ -41,8 +41,8 @@ class Cityscapes_dataset(Custom_dataset):
         ]
 
         # label configure
-        ignore_label = -1
-        self.ignore_label = ignore_label
+        ignore_label = self.ignore_label
+        
         self.id_to_trainid = {
             #unlabeled          #egovehicle         #rectfication border#out of roi         #static
             0:ignore_label,     1:ignore_label,     2:ignore_label,     3:ignore_label,     4:ignore_label,
@@ -74,8 +74,6 @@ class Cityscapes_dataset(Custom_dataset):
         # load and transform
         img = Image.open(self.imgs_list[idx]).convert('RGB')
         label = Image.open(self.labels_list[idx])
-        print(self.labels_list[idx])
-
         img = self.img_preprocess(img)
         label = self.label_preprocess(label)
         
@@ -86,29 +84,6 @@ class Cityscapes_dataset(Custom_dataset):
         return img
 
     def label_preprocess(self, label):
-        label = self.label_transform(label)
-        
-        label = self.convert_id_to_trainid(label)
+        label = self.label_transform(label).squeeze(0).squeeze(0)
+        label = self.convert_id_to_trainid(label).long()
         return label
-
-    def convert_id_to_trainid(self, label): # label: 1HW
-        label_cvt = self.ignore_label*torch.ones_like(label)
-        for id, tid in self.id_to_trainid.items():
-            label_cvt[label == id] = tid # torch에서 == 연산 overloading했음
-        return label_cvt
-        
-    def colorize_label(self, label): # label: B1HW
-        size = list(label.size())
-        temp = torch.ones(size[2:]).cuda()
-        size[1] = 3
-        label_color = torch.zeros(size).cuda()
-        for b in range(size[0]):
-            for c in range(3):
-                for i, color in enumerate(self.colors):
-                    temp = (label[b,0,:,:] == i) * color[c]
-                    label_color[b,c,:,:] += temp
-
-        return label_color
-            
-
-        
