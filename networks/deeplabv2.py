@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch
 import numpy as np
+import torch.utils.model_zoo as model_zoo
 
 affine_par = True
 
@@ -242,25 +243,19 @@ class ResNet101(nn.Module):
 
         return loss    
 
-def Deeplab(num_classes=21, init_weights=None, restore_from=None, phase='train'):
+def Deeplab(num_classes=21, initialization=False, restore_from=None, phase='train'):
     model = ResNet101(Bottleneck, [3, 4, 23, 3], num_classes, phase)
-    if init_weights is not None:
-        saved_state_dict = torch.load(init_weights, map_location=lambda storage, loc: storage)
-        new_params = model.state_dict().copy()
-        for i in saved_state_dict:  
-            i_parts = i.split('.')
-            if not num_classes == 19 or not i_parts[1] == 'layer5':
-                new_params['.'.join(i_parts[1:])] = saved_state_dict[i]
-                #new_params[i] = saved_state_dict[i]
-        model.load_state_dict(new_params)
-    if restore_from is not None: 
-        # saved_state_dict = torch.load(restore_from + '.pth', map_location=lambda storage, loc: storage)
-        # new_params = model.state_dict().copy()
-        # for i in saved_state_dict:
-        #     i_parts = i.split('.')
-        #     if not i_parts[0] == 'layer5':
-        #         new_params[i] = saved_state_dict[i]
-        # model.load_state_dict(new_params)        
+    if initialization:
+        pretrain_dict = model_zoo.load_url('https://download.pytorch.org/models/resnet101-5d3b4d8f.pth')
+        model_param = model.state_dict()
+        new_param = dict()
+        for k, v in pretrain_dict.items():  
+            if k in model_param:
+                new_param[k] = v
+        model_param.update(new_param)
+        model.load_state_dict(model_param)
+        
+    elif restore_from is not None: 
         model.load_state_dict(torch.load(restore_from + '.pth', map_location=lambda storage, loc: storage))
     
     return model

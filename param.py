@@ -29,6 +29,7 @@ def get_params():
     parser.add_argument('--weight_decay', default=5.0e-4, type=float, help='weight_decay')
     parser.add_argument('--momentum', default=0.9, type=float, help='weight_decay')
     parser.add_argument('--lr_schedule_freq', default=10000, type=int, help='frequency to update learning rate')
+    parser.add_argument('--init_imgnet', default=True, type=bool, help='initialization from imgnet pretrained model')
 
     # 환경설정 파라미터
     parser.add_argument('--random_seed', default=3621, type=int, help='random seed')

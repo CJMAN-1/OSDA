@@ -27,7 +27,7 @@ class Trainer:
         
         # segmentation model
         self.model = {}
-        self.model['Task'] = Deeplab(num_classes= 19).cuda()
+        self.model['Task'] = Deeplab(num_classes= 19, initialization=self.opt.init_imgnet).cuda()
 
         # optimizer
         self.optimizer = {}
