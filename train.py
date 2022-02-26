@@ -1,5 +1,5 @@
-from trainer.trainer import Trainer
-from param import *
+from trainer.trainer_srconly import Trainer
+from param.param_srconly import *
 import torch
 import numpy
 import random
