@@ -26,11 +26,11 @@ class Trainer:
         
         self.num_cls = dict()
         self.num_cls['S'] = self.loader['S_t'].dataset.num_class
-        self.num_cls['T'] = self.loader['T_v'].dataset.num_class
+        self.num_cls['T'] = self.loader['T_v'].dataset.num_class + 1 # unknown class
         
         # segmentation model
         self.model = {}
-        self.model['Task'] = Deeplab(num_classes= self.num_cls['S'] + 1, initialization=self.opt.init_imgnet).cuda() # 
+        self.model['Task'] = Deeplab(num_classes= self.num_cls['T'], initialization=self.opt.init_imgnet).cuda() # 
 
         # optimizer
         self.optimizer = {}
@@ -141,7 +141,7 @@ class Trainer:
         conf_mat = np.zeros((self.num_cls['T'],) * 2)
         miou, miou_a = np.zeros(shape=1), np.zeros(shape=1)
 
-        iou = np.zeros(shape=self.num_cls['T']+1)
+        iou = np.zeros(shape=self.num_cls['T'])
         
         for img, lbl in tqdm(self.loader['T_v'], leave=False, desc='Evaluation'):
             img = img.cuda()
@@ -151,6 +151,7 @@ class Trainer:
 
             # IoU 계산
             conf_mat += metric.conf_mat(lbl.cpu().numpy(), pred_lbl.cpu().numpy(), self.num_cls['T'])
+            break
 
         iou = 100 * np.diag(conf_mat)/ (np.sum(conf_mat, axis=0) + np.sum(conf_mat, axis=1) - np.diag(conf_mat))
         miou = np.nanmean(iou)
@@ -166,7 +167,7 @@ class Trainer:
             table.field_names = self.loader['T_v'].dataset.validclass_name[0:10]
             table.add_row(np.round(iou, 2)[0:10])
             self.LOG.info(table.get_string())
-            table.clear_rows()
+            table = PrettyTable()
             table.field_names = self.loader['T_v'].dataset.validclass_name[10:] + ['unk', 'mIoU_a']
             table.add_row(np.concatenate((np.round(iou,2)[10:], [np.round(miou_a,2)])))
             self.LOG.info(table.get_string())
