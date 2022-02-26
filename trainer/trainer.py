@@ -35,6 +35,14 @@ class Trainer:
                                         lr=self.opt.lr,
                                         momentum=self.opt.momentum,
                                         weight_decay=self.opt.weight_decay)
+
+        
+        # learning rate scheduler
+        self.scheduler = {}
+        self.scheduler['Task'] = optim.lr_scheduler.LambdaLR(optimizer=self.optimizer['Task'],
+                                        lr_lambda=lambda epoch: 0.1 ** epoch,
+                                        last_epoch=-1,
+                                        verbose=False)
         
         # tensorboard
         self.writer = SummaryWriter(log_dir=self.opt.log_dir, filename_suffix=self.opt.ex)
@@ -101,6 +109,11 @@ class Trainer:
                 # updata model
                 self.optimizer['Task'].step()
                 self.LOG.info(f'iter : {iteration} | loss : {loss_task:.2f}')
+                if iteration % self.opt.lr_schedule_freq ==0:
+                    pre = self.scheduler['Task'].get_lr()
+                    self.scheduler['Task'].step()
+                    cur = self.scheduler['Task'].get_lr()
+                    self.LOG.info(f'learning rate chnage {pre} -> {cur}')
                 
                 # tensorboard
                 if iteration % self.opt.tensor_freq == 0:
