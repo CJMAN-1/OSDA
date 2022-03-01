@@ -26,7 +26,7 @@ class Trainer:
         
         self.num_cls = dict()
         self.num_cls['S'] = self.loader['S_t'].dataset.num_class
-        self.num_cls['T'] = self.loader['T_v'].dataset.num_class + 1 # unknown class
+        self.num_cls['T'] = self.loader['T_v'].dataset.num_class + 1# unknown class
         
         # segmentation model
         self.model = {}
@@ -70,7 +70,8 @@ class Trainer:
         pd.set_option('display.max_rows', None)
         pd.set_option('display.max_columns', None)
         pd.set_option('expand_frame_repr', False)
-        df_model = summary(self.model['Task'], torch.zeros(4,3,512,1024).cuda(), torch.zeros(4,512,1024).long().cuda())
+        df_model = summary(self.model['Task'],  torch.zeros(self.opt.batch_size, 3, self.opt.img_size[0], self.opt.img_size[1]).cuda(),
+                                                torch.zeros(self.opt.batch_size, self.opt.img_size[0], self.opt.img_size[1]).long().cuda())
         self.LOG.info(df_model.replace(np.nan, "-"))
         self.LOG.info('='*50)
 
@@ -132,7 +133,7 @@ class Trainer:
 
                 # evaluation
                 if iteration % self.opt.eval_freq == 0:
-                    self.eval() 
+                    self.eval()
         
         print(f'학습끝 best miou_a : {self.best_miou_a:.2f}')
 
@@ -146,14 +147,12 @@ class Trainer:
         for img, lbl in tqdm(self.loader['T_v'], leave=False, desc='Evaluation'):
             img = img.cuda()
             lbl = lbl.cuda()
-
             pred_lbl = self.model['Task'](img, lbl)
 
             # IoU 계산
             conf_mat += metric.conf_mat(lbl.cpu().numpy(), pred_lbl.cpu().numpy(), self.num_cls['T'])
-            break
 
-        iou = 100 * np.diag(conf_mat)/ (np.sum(conf_mat, axis=0) + np.sum(conf_mat, axis=1) - np.diag(conf_mat))
+        iou = metric.iou(conf_mat)
         miou = np.nanmean(iou)
         miou_a = np.nanmean(iou[:-1])
         if miou_a > self.best_miou_a:
@@ -171,4 +170,3 @@ class Trainer:
             table.field_names = self.loader['T_v'].dataset.validclass_name[10:] + ['unk', 'mIoU_a']
             table.add_row(np.concatenate((np.round(iou,2)[10:], [np.round(miou_a,2)])))
             self.LOG.info(table.get_string())
-        

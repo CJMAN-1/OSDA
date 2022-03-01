@@ -7,8 +7,8 @@ def get_params():
 
     # 데이터셋 파라미터
         # source
-    parser.add_argument('--source', default='GTA5', help='source dataset')
-    parser.add_argument('--source_list_path', default='./datasets/GTA5/list', help='source data .txt file path')
+    parser.add_argument('--source', default='Cityscapes', help='source dataset')
+    parser.add_argument('--source_list_path', default='./datasets/Cityscapes/list', help='source data .txt file path')
     parser.add_argument('--split_source_train', default='train', help='source train data | all | train | test | val')
 
         # target
@@ -28,7 +28,7 @@ def get_params():
     parser.add_argument('--lr', default=0.001, type=float, help='learning rate')
     parser.add_argument('--weight_decay', default=5.0e-4, type=float, help='weight_decay')
     parser.add_argument('--momentum', default=0.9, type=float, help='weight_decay')
-    parser.add_argument('--lr_schedule_freq', default=10000, type=int, help='frequency to update learning rate')
+    parser.add_argument('--lr_schedule_freq', default=20000, type=int, help='frequency to update learning rate')
     parser.add_argument('--init_imgnet', default=True, type=bool, help='initialization from imgnet pretrained model')
 
     # 환경설정 파라미터
