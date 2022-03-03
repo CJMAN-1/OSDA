@@ -4,7 +4,7 @@ import sys
 from dataloader.util_datasets import *
 import torch
 import torchvision
-from networks.deeplabv2 import *
+from networks.deeplab.deeplabv2 import *
 from util import metric
 from prettytable import PrettyTable
 from tqdm import tqdm

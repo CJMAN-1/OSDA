@@ -4,3 +4,5 @@ tensorboard
 .vscode
 log
 slave.ipynb
+pretrained_closed
+pretrained_open

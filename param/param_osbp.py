@@ -12,8 +12,8 @@ def get_params():
     parser.add_argument('--split_source_train', default='all', help='source train data | all | train | test | val')
 
         # target
-    parser.add_argument('--target', default='Cityscapes', help='target dataset')
-    parser.add_argument('--target_list_path', default='./datasets/Cityscapes/list', help='target data .txt file path')
+    parser.add_argument('--target', default='IDD', help='target dataset')
+    parser.add_argument('--target_list_path', default='./datasets/IDD/list', help='target data .txt file path')
     parser.add_argument('--split_target_train', default='train', help='target train data | all | train | test | val') 
     parser.add_argument('--split_target_test', default='val', help='target test data | all | train | test | val') 
 
@@ -30,6 +30,7 @@ def get_params():
     parser.add_argument('--momentum', default=0.9, type=float, help='weight_decay')
     parser.add_argument('--lr_schedule_freq', default=20000, type=int, help='frequency to update learning rate')
     parser.add_argument('--init_imgnet', default=True, type=bool, help='initialization from imgnet pretrained model')
+    parser.add_argument('--lambda_adv', default=0.1, type=float, help='adversarial loss balancing term')
 
     # 환경설정 파라미터
     parser.add_argument('--random_seed', default=3621, type=int, help='random seed')
@@ -43,14 +44,10 @@ def get_params():
     parser.add_argument('--eval_freq', default=200, type=int, help='frequency to evaluate model')
 
     # model
-    parser.add_argument('--copy_from_closed', default=None, help='path of closed set model(without unknown class) for copy')
-    parser.add_argument('--restore_from', default=None, help='path of pretrained deeplab model')
+    parser.add_argument('--restore_from', default='./pretrained_open/deeplab_gta5_35.50', help='path of pretrained deeplab model')
 
     # 파라미터 저장
     opt = parser.parse_args()
-
-    # 파라미터 직접 추가
-    opt.copy_from_closed = './pretrained_closed/deeplab_gta5_36.94'
 
     # log 폴더 생성
     opt.log_dir = os.path.join('log', opt.ex)

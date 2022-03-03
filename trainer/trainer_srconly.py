@@ -4,7 +4,7 @@ import sys
 from dataloader.util_datasets import *
 import torch
 import torchvision
-from networks.deeplabv2 import *
+from networks.deeplab.deeplabv2 import *
 from util import metric
 from prettytable import PrettyTable
 from tqdm import tqdm
@@ -30,7 +30,18 @@ class Trainer:
         
         # segmentation model
         self.model = {}
-        self.model['Task'] = Deeplab(num_classes= self.num_cls['T'], initialization=self.opt.init_imgnet).cuda() # 
+        self.model['Task'] = Deeplab(num_classes= self.num_cls['T'], initialization=self.opt.init_imgnet).cuda()
+            # w/o 
+        if self.opt.copy_from_closed is not None:
+            model_without_unk = Deeplab(num_classes=self.num_cls['S'], restore_from=self.opt.copy_from_closed)
+            model_param = self.model['Task'].state_dict()
+            new_param = dict()
+            for name, param in model_without_unk.named_parameters():
+                if 'layer5' in name:
+                    continue
+                new_param[name] = param
+            model_param.update(new_param)
+            self.model['Task'].load_state_dict(model_param)
 
         # optimizer
         self.optimizer = {}

@@ -107,9 +107,8 @@ class Classifier_Module(nn.Module):
         return out
 
 class ResNet101(nn.Module):
-    def __init__(self, block, layers, num_classes, phase):
+    def __init__(self, block, layers, num_classes):
         self.inplanes = 64
-        self.phase = phase
         super(ResNet101, self).__init__()
         self.conv1 = nn.Conv2d( 3, 64, kernel_size=7, stride=2, padding=3,
                                 bias=False )
@@ -174,14 +173,15 @@ class ResNet101(nn.Module):
             else :
                 assert 0
                 
-            pred_prob = F.log_softmax(pred_feat, dim = 1)
-            pred_lbl = torch.argmax(pred_prob, dim = 1)
+            pred_lprob = F.log_softmax(pred_feat, dim = 1)
+            pred_lbl = torch.argmax(pred_lprob, dim = 1)
+            pred_prob = F.softmax(pred_feat, dim=1)
 
-            return self.loss_CE, pred_lbl
+            return self.loss_CE, pred_lbl, pred_prob
 
         else:
-            pred_prob = F.log_softmax(pred_feat, dim = 1)
-            pred_lbl = torch.argmax(pred_prob, dim = 1)
+            pred_lprob = F.log_softmax(pred_feat, dim = 1)
+            pred_lbl = torch.argmax(pred_lprob, dim = 1)
             
             return pred_lbl
 
@@ -243,8 +243,8 @@ class ResNet101(nn.Module):
 
         return loss    
 
-def Deeplab(num_classes=21, initialization=False, restore_from=None, phase='train'):
-    model = ResNet101(Bottleneck, [3, 4, 23, 3], num_classes, phase)
+def Deeplab(num_classes=21, initialization=False, restore_from=None):
+    model = ResNet101(Bottleneck, [3, 4, 23, 3], num_classes)
     if initialization:
         pretrain_dict = model_zoo.load_url('https://download.pytorch.org/models/resnet101-5d3b4d8f.pth')
         model_param = model.state_dict()
@@ -257,5 +257,5 @@ def Deeplab(num_classes=21, initialization=False, restore_from=None, phase='trai
         
     elif restore_from is not None: 
         model.load_state_dict(torch.load(restore_from + '.pth', map_location=lambda storage, loc: storage))
-    
+        
     return model

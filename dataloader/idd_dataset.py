@@ -59,7 +59,7 @@ class IDD_dataset(Custom_dataset):
             #traffic light          #pole               #pole group             #obs-str-bar-fallback   #building
             25:6,                   26:5,               27:ignore_label,        28:ignore_label,        29:2,
             #bridge                 #tunnel             #vegetation             #sky                    #fallback background
-            30:ignore_label,        31:ignore_label,    32:8,                   33:10,                  34:-2,
+            30:ignore_label,        31:ignore_label,    32:8,                   33:10,                  34:unknown_label,
             #unlabeled              #ego vehicle        #rectification border   #out of roi             #license plate
             35:ignore_label,        36:ignore_label,    37:ignore_label,        38:ignore_label,        39:ignore_label
         }
